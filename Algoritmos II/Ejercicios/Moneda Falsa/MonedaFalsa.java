@@ -1,58 +1,49 @@
 public class MonedaFalsa {
-	Moneda[] arregloMonedas;
+	
+	public static Moneda getMonedaFalsa(BolsaMonedas bolsa) {
 
-	//Las monedas son insertadas en forma de un arreglo de Vs y Fs donde V son monedas verdaderas y F son monedas falsas
-	public static Moneda getMonedaFalsa(char[] arregloValidez) {
-		arregloMonedas = new Moneda[arregloValidez.length];
+		Tupla bolsitas;
+		BolsaMonedas subBolsa;
+		Moneda monedaResult = null;
 
-		for (int i = 0; i < arregloValidez.length; i++) {
-			arregloMonedas[i] = new Moneda(arregloValidez[i], i);
-		}
-
-		int posicion = getPosicion(arregloMonedas, 0, arregloMonedas.length-1);
-
-		return arregloMonedas[getMin(sumarPesos(monedas, 0, monedas.length/3))]
-
-	}
-
-	private static int obtenerPosicion(Moneda[] monedas, ParOrdenado rango) {
-		ParOrdenado subRango1 = new ParOrdenado (rango.x, (rango.y)/3);
-		ParOrdenado subRango2 = new ParOrdenado ((rango.y)/3, ((rango.y)/3)*2);
-		ParOrdenado subRango3 = new ParOrdenado (((rango.y)/3)*2, rango.y);
-		if (rango.x != rango.y) {
-			pesoRango1 = sumarPesos(monedas, subRango1.x, subRango1.y);
-			pesoRango2 = sumarPesos(monedas, subRango2.x, subRango2.y);
-			pesoRango3 = sumarPesos(monedas, subRango3.x, subRango3.y);
-			
-			if ((pesoRango1 <= pesoRango2) && (pesoRango1 <= pesoRango3)) {
-				return obtenerPosicion(monedas, subRango1);
-			}
-			else if ((pesoRango2 <= pesoRango1) && (pesoRango2 <= pesoRango3)) {
-				return obtenerPosicion(monedas, subRango2);
-			}
-			else {
-				return obtenerPosicion(monedas, subRango3);
-			}
-		}
-	}
-
-	private static int sumarPesos(Moneda[] monedas, int inicio, int fin) {
-		int suma = 0;
-		for (int i = inicio; i <= fin; i++) {
-			suma = suma + monedas[i].peso;
-		}
-	}
-
-	private static int getMin(int a, int b, int c) {
-		if ((a <= b) && (a <= c)) {
-			return a;
-		}
-		else if ((b <= a) && (b <= c)) {
-			return b;
+		if (bolsa.monedas.length % 3 == 0) {
+			bolsitas = bolsa.dividir(3);
+			subBolsa = getMin(bolsitas, 3);
 		}
 
 		else {
-			return c;
+			bolsitas = bolsa.dividir(2);	
+			subBolsa = getMin(bolsitas, 2);
+		}
+
+		if (subBolsa.monedas.length > 1){
+			monedaResult = getMonedaFalsa(subBolsa);
+		}
+		return monedaResult;
+	}
+
+	private static BolsaMonedas getMin(Tupla bolsitas, int n) {
+
+		if (n == 2) {
+			int peso1 = bolsitas.getFirst().pesoBolsa;
+			int peso2 = bolsitas.getSecond().pesoBolsa;
+
+			return (peso1<peso2)?bolsitas.getFirst():bolsitas.getSecond();
+		}
+		else {
+			int peso1 = bolsitas.getFirst().pesoBolsa;
+			int peso2 = bolsitas.getSecond().pesoBolsa;
+			int peso3 = bolsitas.getThird().pesoBolsa;
+
+			if ((peso1 < peso2) && (peso1 < peso3)) {
+				return bolsitas.getFirst();
+			}
+			else if ((peso2 < peso1) && (peso2 < peso3)) {
+				return bolsitas.getSecond();
+			}
+			else {
+				return bolsitas.getThird();
+			}
 		}
 	}
 }
